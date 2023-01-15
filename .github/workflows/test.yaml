@@ -14,7 +14,7 @@ jobs:
       - name: Git clone the repository
         uses: actions/checkout@v3
       - name: Get role-session-name
-        uses: AnchorFree/role-session-name-action@e52abd742d36a523cd3aa979d8cc6b200981ef4e
+        uses: ./
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
