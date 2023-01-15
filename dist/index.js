@@ -37,12 +37,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
+const role_session_name_1 = __nccwpck_require__(8305);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const payload = JSON.stringify(github.context.payload, undefined, 2);
             core.debug(`The event payload: ${payload}`);
-            core.setOutput('time', new Date().toTimeString());
+            core.setOutput('role-session-name', (0, role_session_name_1.roleSessionName)(payload));
         }
         catch (error) {
             if (error instanceof Error)
@@ -51,6 +52,21 @@ function run() {
     });
 }
 run();
+
+
+/***/ }),
+
+/***/ 8305:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.roleSessionName = void 0;
+function roleSessionName(githubContext) {
+    return "";
+}
+exports.roleSessionName = roleSessionName;
 
 
 /***/ }),
