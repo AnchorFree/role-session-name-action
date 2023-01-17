@@ -20,7 +20,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::141011132967:role/GitHub
           aws-region: us-east-1
-          role-session-name: Pango-Inc,terraform-remote-states,run=${{ github.run_id }},job=${{ github.job }}
+          role-session-name: _Pango-Inc,terraform-remote-states
       # Upload a file to AWS s3
       - name:  Get credentials information
         run: |
