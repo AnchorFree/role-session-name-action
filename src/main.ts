@@ -7,7 +7,10 @@ async function run(): Promise<void> {
     const payload = JSON.stringify(github.context.payload, undefined, 2)
     core.debug(`The event payload: ${payload}`)
 
-    core.setOutput('role-session-name', roleSessionName(payload))
+    if (!(github.context.payload.repository && github.context.payload.repository.full_name)) {
+      throw new Error("Payload from GitHub didn't contains required fields: repository.full_name")
+    }
+    core.setOutput('role-session-name', roleSessionName(github.context.payload.repository?.full_name!, github.context.runId))
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
