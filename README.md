@@ -1,22 +1,9 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# role-session-name-action
 
-# Create a JavaScript Action using TypeScript
-
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
-
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
-
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
-
-## Create an action from this template
-
-Click the `Use this Template` and provide the new repo details for your action
+Get GitHub Action context and combine output based on organization,repository, and runId.
+Resulted string supposed to be used as `role-session-name` of `aws-actions/configure-aws-credentials`
 
 ## Code in Main
-
-> First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.
 
 Install the dependencies  
 ```bash
@@ -32,43 +19,17 @@ Run the tests :heavy_check_mark:
 ```bash
 $ npm test
 
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
+> typescript-action@0.0.0 test
+> jest
 
+ PASS  __tests__/main.test.ts
 ...
+Test Suites: 1 passed, 1 total
+Tests:       105 passed, 105 total
+Snapshots:   0 total
+Time:        0.994 s, estimated 1 s
+Ran all test suites.
 ```
-
-## Change action.yml
-
-The action.yml defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
 
 ## Publish to a distribution branch
 
@@ -93,9 +54,8 @@ See the [versioning documentation](https://github.com/actions/toolkit/blob/maste
 You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
 
 ```yaml
-uses: ./
-with:
-  milliseconds: 1000
+- uses: ./
+  id: role-session-name
 ```
 
 See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
