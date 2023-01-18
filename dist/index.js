@@ -39,11 +39,16 @@ const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const role_session_name_1 = __nccwpck_require__(8305);
 function run() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const payload = JSON.stringify(github.context.payload, undefined, 2);
             core.debug(`The event payload: ${payload}`);
-            core.setOutput('role-session-name', (0, role_session_name_1.roleSessionName)(payload));
+            if (!(github.context.payload.repository &&
+                github.context.payload.repository.full_name)) {
+                throw new Error("Payload from GitHub didn't contains required fields: repository.full_name");
+            }
+            core.setOutput('role-session-name', (0, role_session_name_1.roleSessionName)((_a = github.context.payload.repository) === null || _a === void 0 ? void 0 : _a.full_name, github.context.runId));
         }
         catch (error) {
             if (error instanceof Error)
@@ -62,11 +67,110 @@ run();
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.roleSessionName = void 0;
-function roleSessionName(githubContext) {
-    return "";
+exports.cutMiddle = exports.cutTail = exports.combineLength = exports.deduplicate = exports.sanityze = exports.roleSessionName = exports.replace_symbol = exports.invalid_regex = exports.valid_regex = void 0;
+// AWS role-session-name constrains:
+// allowed regex:
+exports.valid_regex = /[\w+=,.@-]*/;
+// max lenght: 64
+exports.invalid_regex = /[^\w+=,.@-]/g;
+exports.replace_symbol = '-';
+function roleSessionName(full_name, runId) {
+    if (full_name === '') {
+        return '';
+    }
+    const full_name_splitted = full_name.split('/', 2);
+    let organization = full_name_splitted[0];
+    let repository = full_name_splitted[1];
+    organization = sanityze(organization, exports.invalid_regex);
+    organization = deduplicate(organization, exports.replace_symbol);
+    repository = sanityze(repository, exports.invalid_regex);
+    repository = deduplicate(repository, exports.replace_symbol);
+    while (combineLength(organization, repository, runId) > 64) {
+        if (!organization.includes('..')) {
+            organization = cutTail(organization, 64 - combineLength(organization, repository, runId));
+            continue;
+        }
+        if (!repository.includes('..')) {
+            repository = cutMiddle(repository, 64 - combineLength(organization, repository, runId));
+        }
+        else {
+            throw new Error("Couldn't truncate input to fulfill required 64 symbols");
+        }
+    }
+    return [organization, repository, runId.toString()].join(',');
 }
 exports.roleSessionName = roleSessionName;
+function sanityze(input, regex) {
+    if (input === '') {
+        return '';
+    }
+    return input.replace(regex, exports.replace_symbol);
+}
+exports.sanityze = sanityze;
+function deduplicate(input, findReplace) {
+    if (input === '') {
+        return '';
+    }
+    if (findReplace === '') {
+        return input;
+    }
+    return input.replace(new RegExp(`${findReplace}+`, 'g'), findReplace);
+}
+exports.deduplicate = deduplicate;
+function combineLength(org, repo, run) {
+    return [org, repo, run.toString()].join(',').length;
+}
+exports.combineLength = combineLength;
+function cutTail(input, goal) {
+    if (goal >= 0) {
+        return input;
+    }
+    if (input.length < 6) {
+        return input;
+    }
+    let result = input;
+    const input_lenght = input.length;
+    let cut = 2;
+    const cut_max = Math.ceil(input_lenght / 2);
+    while (cut < cut_max) {
+        result = input.substring(0, input_lenght - cut);
+        if (result.length < input_lenght + goal) {
+            break;
+        }
+        else {
+            cut += 1;
+        }
+    }
+    result = `${result.substring(0, result.length - 1)}..`;
+    return result;
+}
+exports.cutTail = cutTail;
+function cutMiddle(input, goal) {
+    if (goal >= 0) {
+        return input;
+    }
+    if (input.length < 7) {
+        return input;
+    }
+    let result = input;
+    const input_lenght = input.length;
+    let cut = 3;
+    const cut_max = Math.floor(input_lenght / 2);
+    while (cut < cut_max) {
+        result =
+            input.substring(0, Math.floor(input_lenght / 2) - Math.floor(cut / 2)) +
+                input.substring(Math.floor(input_lenght / 2) + Math.floor(cut / 2), input_lenght);
+        if (result.length <= input_lenght + goal) {
+            break;
+        }
+        else {
+            cut += 1;
+        }
+    }
+    result = `${result.substring(0, Math.floor(result.length / 2) - 1)}..${result.substring(Math.ceil(result.length / 2) + 1, result.length)}`;
+    return result;
+}
+exports.cutMiddle = cutMiddle;
 
 
 /***/ }),
