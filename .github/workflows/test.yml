@@ -6,11 +6,16 @@ on: # rebuild any PRs and main branch changes
       - main
       - 'releases/*'
 
+# permission can be added at job level or workflow level
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
 jobs:
   build: # make sure build/ci work properly
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: |
           npm install
       - run: |
@@ -18,7 +23,13 @@ jobs:
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./
+        id: role-session-name
+      - uses: aws-actions/configure-aws-credentials@v1
         with:
-          milliseconds: 1000
+          role-to-assume: arn:aws:iam::141011132967:role/GitHub # 141011132967 DevOpsTest
+          aws-region: us-east-1
+          role-session-name: ${{ steps.role-session-name.outputs.role-session-name }}
+      - run: |
+          aws sts get-caller-identity
