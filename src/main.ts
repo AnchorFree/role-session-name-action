@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import {roleSessionName} from './role-session-name'
+import {roleSessionName} from './role-session-name.js'
 
 async function run(): Promise<void> {
   try {
