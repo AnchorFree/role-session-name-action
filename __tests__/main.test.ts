@@ -4,7 +4,7 @@ import {
   cutTail,
   deduplicate,
   sanityze
-} from '../src/role-session-name'
+} from '../src/role-session-name.js'
 import {expect, test} from '@jest/globals'
 
 test.concurrent.each([
