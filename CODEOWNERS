@@ -1,1 +1,3 @@
-* @actions/actions-runtime
+* @AnchorFree/kyiv-devops
+.github/dependabot.yml @AnchorFree/secops
+.github/workflows/codeql-analysis.yml @AnchorFree/secops
