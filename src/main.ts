@@ -7,12 +7,10 @@ async function run(): Promise<void> {
     const payload = JSON.stringify(github.context.payload, undefined, 2)
     core.debug(`The event payload: ${payload}`)
 
-    if (
-      !(
-        github.context.payload.repository &&
-        github.context.payload.repository.full_name
-      )
-    ) {
+    if (!(
+      github.context.payload.repository &&
+      github.context.payload.repository.full_name
+    )) {
       throw new Error(
         "Payload from GitHub didn't contains required fields: repository.full_name"
       )
